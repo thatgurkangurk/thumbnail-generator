@@ -16,7 +16,9 @@ RUN case "${TARGETARCH}" in \
       *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
     esac && \
     URL="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${FFMPEG_VERSION}-latest-linux${ARCH_NAME}-lgpl-${FFMPEG_VERSION}.tar.xz" && \
-    curl -fsSL "$URL" | tar -xJ --strip-components=2 -C /tmp/ */bin/ffmpeg */bin/ffprobe
+    curl -fsSL "$URL" | tar -xJ --wildcards --strip-components=1 -C /tmp/ "*/bin/ffmpeg" "*/bin/ffprobe" && \
+    mv /tmp/bin/ffmpeg /tmp/ffmpeg && \
+    mv /tmp/bin/ffprobe /tmp/ffprobe
 
 FROM debian:trixie-slim AS runtime
 LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/thumbnail-generator"
