@@ -109,6 +109,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APP_VERSION=${{ steps.bin_version.outputs.VERSION }}
+            FFMPEG_VERSION=9.0.2
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: Dockerfile.actions
