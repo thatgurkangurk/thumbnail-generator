@@ -54,4 +54,6 @@ COPY ./deploy-out/${TARGETARCH}/thumbnail-generator /usr/local/bin/thumbnail-gen
 
 USER thumbnail
 
+EXPOSE 3000
+
 ENTRYPOINT ["/usr/local/bin/thumbnail-generator"]
