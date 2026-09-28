@@ -1,0 +1,26 @@
+FROM debian:trixie-slim AS runtime
+LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/thumbnail-generator"
+
+ARG TARGETARCH
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /thumbnail
+
+ARG APP_VERSION
+ENV APP_VERSION=$APP_VERSION
+
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd -g ${GID} thumbnail && \
+    useradd -u ${UID} -g thumbnail -s /usr/sbin/nologin thumbnail
+
+COPY ./deploy-out/${TARGETARCH}/thumbnail-generator /usr/local/bin/thumbnail-generator
+
+USER thumbnail
+
+ENTRYPOINT ["/usr/local/bin/thumbnail-generator"]
