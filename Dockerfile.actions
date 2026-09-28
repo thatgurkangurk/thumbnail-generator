@@ -10,15 +10,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG TARGETARCH
 ARG FFMPEG_VERSION=9.0
 
+ENV TARGETARCH=${TARGETARCH}
+ENV FFMPEG_VERSION=${FFMPEG_VERSION}
+
 RUN case "${TARGETARCH}" in \
       "amd64") ARCH_NAME="64" ;; \
       "arm64") ARCH_NAME="arm64" ;; \
       *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
     esac && \
     URL="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${FFMPEG_VERSION}-latest-linux${ARCH_NAME}-lgpl-${FFMPEG_VERSION}.tar.xz" && \
-    curl -fsSL "$URL" | tar -xJ --wildcards --strip-components=1 -C /tmp/ "*/bin/ffmpeg" "*/bin/ffprobe" && \
-    mv /tmp/bin/ffmpeg /tmp/ffmpeg && \
-    mv /tmp/bin/ffprobe /tmp/ffprobe
+    echo "Fetching: ${URL}" && \
+    curl -fsSL "${URL}" -o /tmp/ffmpeg.tar.xz && \
+    mkdir -p /tmp/extracted && \
+    tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/extracted --strip-components=1 && \
+    mv /tmp/extracted/bin/ffmpeg /tmp/ffmpeg && \
+    mv /tmp/extracted/bin/ffprobe /tmp/ffprobe && \
+    rm -rf /tmp/extracted /tmp/ffmpeg.tar.xz
 
 FROM debian:trixie-slim AS runtime
 LABEL org.opencontainers.image.source="https://github.com/thatgurkangurk/thumbnail-generator"
